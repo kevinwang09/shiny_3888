@@ -104,7 +104,7 @@ pred_cats_dogs(model = model, file_name = "tmp.jpg")
 # Prediction on multiple images (Extension)
 ```{r}
 # define image paths to classify
-image_paths = list.files('keras_image_r_python/images/', recursive = TRUE, full.names = TRUE)
+image_paths = list.files('images/', recursive = TRUE, full.names = TRUE)
 
 # get model prediction
 pred_list = purrr::map(

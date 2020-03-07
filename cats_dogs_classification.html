@@ -4093,11 +4093,11 @@ cat_labs = read_dog_cat_labels(&#39;https://raw.githubusercontent.com/AdamSpannb
 
 labels_tbl = bind_rows(
   tibble(
-    catdog = &quot;dog&quot;,
+    catdog = &quot;cat&quot;,
     class_description = cat_labs
   ),
   tibble(
-    catdog = &quot;cat&quot;,
+    catdog = &quot;dog&quot;,
     class_description = dog_labs
   )
 )
@@ -4136,16 +4136,16 @@ pred_cats_dogs = function(model, file_name){
 
 pred_cats_dogs(model = model, file_name = &quot;tmp.jpg&quot;)</code></pre>
 <pre><code>##   class_name  class_description      score catdog
-## 1  n02099601   golden_retriever 0.20523271    cat
-## 2  n02111129           Leonberg 0.14753401    cat
-## 3  n02099712 Labrador_retriever 0.12186383    cat
-## 4  n02108422       bull_mastiff 0.07182112    cat
-## 5  n02109047         Great_Dane 0.05823145    cat</code></pre>
+## 1  n02099601   golden_retriever 0.20523271    dog
+## 2  n02111129           Leonberg 0.14753401    dog
+## 3  n02099712 Labrador_retriever 0.12186383    dog
+## 4  n02108422       bull_mastiff 0.07182112    dog
+## 5  n02109047         Great_Dane 0.05823145    dog</code></pre>
 </div>
 <div id="prediction-on-multiple-images-extension" class="section level1" number="4">
 <h1 number="4"><span class="header-section-number">4</span> Prediction on multiple images (Extension)</h1>
 <pre class="r"><code># define image paths to classify
-image_paths = list.files(&#39;keras_image_r_python/images/&#39;, recursive = TRUE, full.names = TRUE)
+image_paths = list.files(&#39;images/&#39;, recursive = TRUE, full.names = TRUE)
 
 # get model prediction
 pred_list = purrr::map(
@@ -4157,8 +4157,8 @@ pred_tbl = pred_list %&gt;%
 
 pred_tbl %&gt;%
   DT::datatable()</code></pre>
-<div id="htmlwidget-9230f860e73d4de5ed06" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-9230f860e73d4de5ed06">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"],["1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4","5","5","5","5","5","6","6","6","6","6"],["n02112137","n02091467","n02112350","n02110958","n02104365","n02124075","n02127052","n02123159","n02123597","n02123045","n02123045","n02124075","n02123159","n02971356","n04074963","n02127052","n02123597","n03887697","n04004767","n04265275","n02108089","n03063689","n02108422","n02093256","n02108915","n02085620","n02107312","n04162706","n02105412","n02104365"],["chow","Norwegian_elkhound","keeshond","pug","schipperke","Egyptian_cat","lynx","tiger_cat","Siamese_cat","tabby","tabby","Egyptian_cat","tiger_cat","carton","remote_control","lynx","Siamese_cat","paper_towel","printer","space_heater","boxer","coffeepot","bull_mastiff","Staffordshire_bullterrier","French_bulldog","Chihuahua","miniature_pinscher","seat_belt","kelpie","schipperke"],[0.278078317642212,0.171212092041969,0.127804145216942,0.0927235782146454,0.0766170248389244,0.449421167373657,0.195502743124962,0.0605076104402542,0.032957598567009,0.0264741834253073,0.47775000333786,0.373141676187515,0.126750722527504,0.00174828770104796,0.00145766872446984,0.14759236574173,0.136633738875389,0.0823458880186081,0.0631315484642982,0.0629125311970711,0.107165843248367,0.0553199276328087,0.047920286655426,0.0328475199639797,0.0314257219433784,0.777918994426727,0.0610592402517796,0.0347556844353676,0.0251447204500437,0.0181665048003197],["cat","cat","cat","cat","cat","dog","dog","dog","dog","dog","dog","dog","dog",null,null,"dog","dog",null,null,null,"cat",null,"cat","cat","cat","cat","cat",null,"cat","cat"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>image_paths<\/th>\n      <th>class_name<\/th>\n      <th>class_description<\/th>\n      <th>score<\/th>\n      <th>catdog<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":4},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-09da3cd739c6d9852f7e" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-09da3cd739c6d9852f7e">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"],["1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4","5","5","5","5","5","6","6","6","6","6"],["n02112137","n02091467","n02112350","n02110958","n02104365","n02124075","n02127052","n02123159","n02123597","n02123045","n02123045","n02124075","n02123159","n02971356","n04074963","n02127052","n02123597","n03887697","n04004767","n04265275","n02108089","n03063689","n02108422","n02093256","n02108915","n02085620","n02107312","n04162706","n02105412","n02104365"],["chow","Norwegian_elkhound","keeshond","pug","schipperke","Egyptian_cat","lynx","tiger_cat","Siamese_cat","tabby","tabby","Egyptian_cat","tiger_cat","carton","remote_control","lynx","Siamese_cat","paper_towel","printer","space_heater","boxer","coffeepot","bull_mastiff","Staffordshire_bullterrier","French_bulldog","Chihuahua","miniature_pinscher","seat_belt","kelpie","schipperke"],[0.278078317642212,0.171212092041969,0.127804145216942,0.0927235782146454,0.0766170248389244,0.449421167373657,0.195502743124962,0.0605076104402542,0.032957598567009,0.0264741834253073,0.47775000333786,0.373141676187515,0.126750722527504,0.00174828770104796,0.00145766872446984,0.14759236574173,0.136633738875389,0.0823458880186081,0.0631315484642982,0.0629125311970711,0.107165843248367,0.0553199276328087,0.047920286655426,0.0328475199639797,0.0314257219433784,0.777918994426727,0.0610592402517796,0.0347556844353676,0.0251447204500437,0.0181665048003197],["dog","dog","dog","dog","dog","cat","cat","cat","cat","cat","cat","cat","cat",null,null,"cat","cat",null,null,null,"dog",null,"dog","dog","dog","dog","dog",null,"dog","dog"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>image_paths<\/th>\n      <th>class_name<\/th>\n      <th>class_description<\/th>\n      <th>score<\/th>\n      <th>catdog<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":4},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="session-info" class="section level1" number="5">
 <h1 number="5"><span class="header-section-number">5</span> Session info</h1>
