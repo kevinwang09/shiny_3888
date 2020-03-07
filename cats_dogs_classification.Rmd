@@ -55,11 +55,11 @@ cat_labs = read_dog_cat_labels('https://raw.githubusercontent.com/AdamSpannbauer
 
 labels_tbl = bind_rows(
   tibble(
-    catdog = "dog",
+    catdog = "cat",
     class_description = cat_labs
   ),
   tibble(
-    catdog = "cat",
+    catdog = "dog",
     class_description = dog_labs
   )
 )
