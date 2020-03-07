@@ -5,12 +5,18 @@ date: "07/03/2020"
 output: html_document
 ---
 
+# Summary
+
+This document follow closely from https://adamspannbauer.github.io/2018/02/14/image-classification-r-and-python/. 
+
+We will use a pre-trained keras model to make prediction (cat/dog) on animals in a picture.
 
 # Loading 
 
 ## Packages
 ```{r}
 library(keras)
+library(tidyverse)
 ```
 
 
@@ -18,19 +24,19 @@ library(keras)
 ```{r}
 # define image preprocessor for use with keras vgg19
 image_preprocessor = function(image_path) {
-    image = image_load(image_path, target_size = c(224,224))
-    image = image_to_array(image)
-    image = array_reshape(image, c(1, dim(image)))
-    image = imagenet_preprocess_input(image)
-    return(image)
+  image = image_load(image_path, target_size = c(224,224))
+  image = image_to_array(image)
+  image = array_reshape(image, c(1, dim(image)))
+  image = imagenet_preprocess_input(image)
+  return(image)
 }
 
 #function to read in files housing all cat/dog breeds in imagenet labels
 read_dog_cat_labels = function(path) {
-    labs = readLines(path)
-    labs = trimws(unlist(strsplit(labs, ',')))
-    labs = gsub('\\s+', '_', labs)
-    return(labs)
+  labs = readLines(path)
+  labs = trimws(unlist(strsplit(labs, ',')))
+  labs = gsub('\\s+', '_', labs)
+  return(labs)
 }
 ```
 
@@ -42,6 +48,7 @@ image_paths = list.files('keras_image_r_python/images/', recursive = TRUE, full.
 
 # preprocess images
 image_list = lapply(image_paths, image_preprocessor)
+names(image_list) = image_paths
 ```
 
 
@@ -52,44 +59,49 @@ model = application_vgg19(weights = 'imagenet')
 ```
 
 
+## Cat/dog labels
+```{r, eval = FALSE}
+dog_labs = read_dog_cat_labels('https://raw.githubusercontent.com/AdamSpannbauer/keras_image_r_python/master/data/dog_classes.txt')
+cat_labs = read_dog_cat_labels('https://raw.githubusercontent.com/AdamSpannbauer/keras_image_r_python/master/data/cat_classes.txt')
+
+labels_tbl = bind_rows(
+  tibble(
+    catdog = "dog",
+    class_description = cat_labs
+  ),
+  tibble(
+    catdog = "cat",
+    class_description = dog_labs
+  )
+)
+
+write_csv(labels_tbl, "supp/labels_tbl.csv")
+```
+
+```{r}
+labels_tbl = read_csv("supp/labels_tbl.csv")
+```
+
+
 # Making prediction with existing model 
 
 ```{r}
 # get model prediction
-preds = lapply(image_list, function(i) {
-    imagenet_decode_predictions(predict(model, i), top = 1)[[1]]
-})
+pred_list = purrr::map(
+  .x = image_list, 
+  .f = ~ imagenet_decode_predictions(predict(model, .x))[[1]] %>%
+    left_join(labels_tbl, by = "class_description"))
 
-pred_df = do.call(rbind, preds)
-pred_df$class_name = NULL
+pred_tbl = pred_list %>% 
+  bind_rows(.id = "image_paths")
 
-pred_df
+pred_tbl %>% 
+  DT::datatable()
 ```
 
 ## Adding cats/dogs labels
 
 The model only outputs breeds of the animal, not species. 
-
-```{r}
-dog_labs = read_dog_cat_labels('keras_image_r_python/data/dog_classes.txt')
-cat_labs = read_dog_cat_labels('keras_image_r_python/data/cat_classes.txt')
-
-#create column for labeling dog breeds as dog and cat breeds as cat
-pred_df$catdog = NA
-pred_df$catdog[pred_df$class_description %in% dog_labs] = 'Dog'
-pred_df$catdog[pred_df$class_description %in% cat_labs] = 'Cat'
-
-
-#add column with image paths
-pred_df$file_name = unlist(image_paths)
-pred_df = pred_df[order(-pred_df$score),]
-#------------------------------------------------
-
-#####################
-# print output
-#####################
-print(pred_df)
-```
 
 # Download a new file and make prediction
 ```{r}
@@ -97,3 +109,10 @@ download.file("https://s3.amazonaws.com/cdn-origin-etr.akc.org/wp-content/upload
 
 imagenet_decode_predictions(predict(model, image_preprocessor("tmp.jpg")))[[1]]
 ```
+
+
+# Session info
+```{r}
+sessioninfo::session_info()
+```
+
