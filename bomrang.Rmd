@@ -1,0 +1,48 @@
+---
+title: "RMarkdown <3 Shiny"
+author: "Kevin Wang"
+date: "07/03/2020"
+output: html_document
+runtime: shiny
+---
+
+```{r}
+suppressPackageStartupMessages({
+  library(bomrang)
+  library(tidyverse)
+  library(shiny)
+})
+```
+
+
+```{r}
+Melbourne_weather = get_current_weather("Melbourne (Olympic Park)")
+
+Melbourne_weather %>% 
+  ggplot(aes(x = local_date_time_full,
+             y = apparent_t)) +
+  geom_path() +
+  labs(x = "Time", 
+       y = "Apparent Temp (Celcius)")
+```
+
+
+
+```{r}
+inputPanel(
+  shiny::textInput(inputId = "location",
+                   label = "Put a location here!",
+                   value = "Sydney")
+)
+
+renderPlot({
+  weather <- get_current_weather(input$location)
+  
+  weather %>% 
+    ggplot(aes(x = local_date_time_full,
+               y = apparent_t)) +
+    geom_path() +
+    labs(x = "Time", 
+         y = "Apparent Temp (Celcius)")
+})
+```
