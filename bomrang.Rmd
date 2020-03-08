@@ -32,7 +32,7 @@ Melbourne_weather %>%
 inputPanel(
   shiny::textInput(inputId = "location",
                    label = "Put a location here!",
-                   value = "Sydney")
+                   value = "Hobart")
 )
 
 renderPlot({
