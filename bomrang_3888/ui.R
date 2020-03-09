@@ -1,15 +1,13 @@
 shinyUI(fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins
+    titlePanel("Weather"),
     sidebarLayout(
         sidebarPanel(
+            shiny::textInput(inputId = "location",
+                             label = "Put a location here!",
+                             value = "Hobart")
         ),
-
-        # Show a plot of the generated distribution
         mainPanel(
+            shiny::plotOutput("temp_plot")
         )
     )
 ))

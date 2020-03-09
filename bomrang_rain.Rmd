@@ -16,16 +16,15 @@ suppressPackageStartupMessages({
 
 
 ```{r}
-Melbourne_weather = get_current_weather("Melbourne (Olympic Park)")
+melbourne_weather = get_current_weather("Melbourne")
 
-Melbourne_weather %>% 
+melbourne_weather %>% 
   ggplot(aes(x = local_date_time_full,
              y = apparent_t)) +
   geom_path() +
   labs(x = "Time", 
        y = "Apparent Temp (Celcius)")
 ```
-
 
 
 ```{r}
@@ -36,7 +35,7 @@ inputPanel(
 )
 
 renderPlot({
-  weather <- get_current_weather(input$location)
+  weather = get_current_weather(input$location)
   
   weather %>% 
     ggplot(aes(x = local_date_time_full,
