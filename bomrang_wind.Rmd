@@ -1,5 +1,5 @@
 ---
-title: "Bomrang Wind app"
+title: "Bomrang Temp app"
 author: "Kevin Wang"
 date: "07/03/2020"
 output: html_document
@@ -16,12 +16,42 @@ suppressPackageStartupMessages({
 
 
 ```{r}
-melbourne_weather = get_current_weather("Melbourne")
+SYD_weather = get_current_weather("Sydney airport")
 
-melbourne_weather %>% 
+glimpse(SYD_weather)
+
+subtitle = ifelse(any(SYD_weather$wind_spd_kmh >= 30), "Wind warning", "All normal")
+
+SYD_weather %>% 
   ggplot(aes(x = local_date_time_full,
              y = wind_spd_kmh)) +
   geom_path() +
   labs(x = "Time", 
-       y = "Wind (km/h)")
+       y = "Wind (km/h)",
+       title = "SYD airport wind speed",
+       subtitle = subtitle)
+```
+
+
+```{r}
+inputPanel(
+  shiny::textInput(inputId = "location",
+                   label = "Put a location here!",
+                   value = "Sydney airport")
+)
+
+renderPlot({
+  weather = get_current_weather(input$location)
+  
+  subtitle = ifelse(any(weather$wind_spd_kmh >= 30), "Wind warning", "All normal")
+  
+  weather %>% 
+    ggplot(aes(x = local_date_time_full,
+               y = wind_spd_kmh)) +
+    geom_path() +
+    labs(x = "Time", 
+         y = "Wind (km/h)",
+         title = weather$full_name[1],
+         subtitle = subtitle)
+})
 ```

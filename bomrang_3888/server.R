@@ -10,15 +10,6 @@ shinyServer(function(input, output) {
         return(weather)
     })
     
-    output$temp_plot = renderPlot({
-        fetch_data() %>% 
-            ggplot(aes(x = local_date_time_full,
-                       y = apparent_t)) +
-            geom_path() +
-            labs(x = "Time", 
-                 y = "Apparent Temp (Celcius)")
-    })
-    
     output$wind_plot = renderPlot({
         fetch_data() %>% 
             ggplot(aes(x = local_date_time_full,
@@ -28,7 +19,13 @@ shinyServer(function(input, output) {
                  y = "Wind (km/h)")
     })
     
-    output$ccf_plot = renderPlot({
-        ggCcf(fetch_data()$wind_spd_kmh, fetch_data()$apparent_t)
+    output$temp_plot = renderPlot({
+        fetch_data() %>% 
+            ggplot(aes(x = local_date_time_full,
+                       y = apparent_t)) +
+            geom_path() +
+            labs(x = "Time", 
+                 y = "Apparent Temp (Celcius)")
     })
+    
 })

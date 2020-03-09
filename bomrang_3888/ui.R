@@ -4,12 +4,11 @@ shinyUI(fluidPage(
         sidebarPanel(
             shiny::textInput(inputId = "location",
                              label = "Put a location here!",
-                             value = "Hobart")
+                             value = "Sydney airport")
         ),
         mainPanel(
-            shiny::plotOutput("temp_plot"),
-            shiny::plotOutput("wind_plot"),
-            shiny::plotOutput("ccf_plot")
+            shiny::plotOutput(outputId = "wind_plot"),
+            shiny::plotOutput(outputId = "temp_plot")
         )
     )
 ))
