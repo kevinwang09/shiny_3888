@@ -1,5 +1,5 @@
 ---
-title: "RMarkdown <3 Shiny"
+title: "Bomrang Temp app"
 author: "Kevin Wang"
 date: "07/03/2020"
 output: html_document

@@ -7,7 +7,8 @@ shinyUI(fluidPage(
                              value = "Hobart")
         ),
         mainPanel(
-            shiny::plotOutput("temp_plot")
+            shiny::plotOutput("temp_plot"),
+            shiny::plotOutput("wind_plot")
         )
     )
 ))

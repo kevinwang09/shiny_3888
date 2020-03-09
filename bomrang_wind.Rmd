@@ -1,0 +1,27 @@
+---
+title: "Bomrang Wind app"
+author: "Kevin Wang"
+date: "07/03/2020"
+output: html_document
+runtime: shiny
+---
+
+```{r}
+suppressPackageStartupMessages({
+  library(bomrang)
+  library(tidyverse)
+  library(shiny)
+})
+```
+
+
+```{r}
+melbourne_weather = get_current_weather("Melbourne")
+
+melbourne_weather %>% 
+  ggplot(aes(x = local_date_time_full,
+             y = wind_spd_kmh)) +
+  geom_path() +
+  labs(x = "Time", 
+       y = "Wind (km/h)")
+```
