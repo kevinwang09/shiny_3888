@@ -39,3 +39,4 @@ vignettes/*.pdf
 .Renviron
 keras_image_r_python
 catdog_3888
+ncov_3888
