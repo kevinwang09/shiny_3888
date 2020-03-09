@@ -1,12 +1,17 @@
 library(shiny)
 library(bomrang)
 library(tidyverse)
+library(forecast)
 
 shinyServer(function(input, output) {
-    output$temp_plot = renderPlot({
+    
+    fetch_data = reactive({
         weather = get_current_weather(input$location)
-        
-        weather %>% 
+        return(weather)
+    })
+    
+    output$temp_plot = renderPlot({
+        fetch_data() %>% 
             ggplot(aes(x = local_date_time_full,
                        y = apparent_t)) +
             geom_path() +
@@ -15,13 +20,15 @@ shinyServer(function(input, output) {
     })
     
     output$wind_plot = renderPlot({
-        melbourne_weather = get_current_weather("Melbourne")
-        
-        melbourne_weather %>% 
+        fetch_data() %>% 
             ggplot(aes(x = local_date_time_full,
                        y = wind_spd_kmh)) +
             geom_path() +
             labs(x = "Time", 
                  y = "Wind (km/h)")
+    })
+    
+    output$ccf_plot = renderPlot({
+        ggCcf(fetch_data()$wind_spd_kmh, fetch_data()$apparent_t)
     })
 })

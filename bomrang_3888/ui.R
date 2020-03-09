@@ -8,7 +8,8 @@ shinyUI(fluidPage(
         ),
         mainPanel(
             shiny::plotOutput("temp_plot"),
-            shiny::plotOutput("wind_plot")
+            shiny::plotOutput("wind_plot"),
+            shiny::plotOutput("ccf_plot")
         )
     )
 ))
