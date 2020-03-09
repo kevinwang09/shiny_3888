@@ -1,0 +1,69 @@
+---
+title: "Bomrang nCov19 app"
+author: "Kevin Wang"
+date: "07/03/2020"
+output: html_document
+runtime: shiny
+---
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(shiny)
+  library(nCov2019)
+})
+
+# devtools::install_github("GuangchuangYu/nCov2019")
+```
+
+```{r}
+y <- load_nCov2019(lang = 'en', source='github')
+ncov_aus_cumcases = y['global'] %>% 
+  dplyr::filter(country == "Australia")
+
+glimpse(ncov_aus_cumcases)
+```
+
+
+
+```{r}
+ncov_aus_cumcases %>% 
+  ggplot(aes(x = time,
+             y = cum_confirm)) +
+  geom_path() +
+  labs(x = "Time", 
+       y = "Cumulative confirmed cases",
+       title = "nCov-19 in Australia")
+```
+
+
+
+
+```{r, echo = FALSE}
+inputPanel(
+  selectizeInput(inputId = "country",
+                 label = "Select some countries",
+                 choices = y['global']$country %>% unique,
+                 multiple = TRUE)
+)
+
+renderPlot({
+  ncov_country_cumcases = y['global'] %>% 
+    dplyr::filter(country %in% input$country)
+  
+  ncov_country_cumcases %>% 
+    ggplot(aes(x = time,
+               y = cum_confirm,
+               colour = country)) +
+    geom_path(size = 1.2) +
+    scale_y_log10(labels = scales::comma) +
+    labs(x = "Time", 
+         y = "Cumulative confirmed cases",
+         title = "nCov-19 in selected countries")
+})
+```
+
+```{r}
+sessioninfo::session_info()
+```
+
