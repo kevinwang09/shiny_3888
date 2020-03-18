@@ -1,0 +1,179 @@
+---
+title: "Making a Shiny application"
+subtitle: "https://kevinwang09.github.io/shiny_3888/"
+author: '[Kevin Y. X. Wang](https://kevinwang09.github.io/)'
+date: "`r paste0('Initiated on 2020 April 02, compiled on ', format(Sys.time(), '%Y %b %d'))`"
+output:
+  xaringan::moon_reader:
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: true # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: true
+      ratio: '16:9' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling
+---
+```{r, echo = FALSE}
+knitr::knit_hooks$set(error = function(x, options) {
+  paste0("<pre style=\"color: red;\"><code>", x, "</code></pre>")
+})
+
+knitr::opts_chunk$set(echo = TRUE, fig.retina = 2)
+
+suppressPackageStartupMessages({
+  library(bomrang)
+  library(tidyverse)
+  library(shiny)
+})
+```
+
+---
+
+# Lecture outline
+
++ Case scenario: Sydney airport dashboard
++ It all begins with a RMarkdown
++ Inputs and outputs of a Shiny app
++ Demo 1: `bomrang` Shiny app - wind plot
++ Demo 2: `bomrang` Shiny app - temperature plot and `reactive`
++ Demo 3: `bomrang` Shiny app - deployment
++ COVID-19 Shiny app - reproducibility 
++ Tips and resources for Shiny
+---
+# Case study: issuing wind warnings
+
++ Imagine that you are working at Sydney airport as a data scientist
+
++ You are responsible for issuing wind speed warnings whenever the windspeed reaches 30km/h (or above) in the past 72 hours
+
+<center>
+<img src="figures/SYD_wind_warning.png", width="50%">
+</center>
+---
+
+
+# `bomrang`
+
+.scroll-output[
+```{r, fig.width = 14}
+library(bomrang)
+
+SYD_weather = get_current_weather("Sydney airport")
+
+SYD_weather %>% 
+  ggplot(aes(x = local_date_time_full,
+             y = wind_spd_kmh)) +
+  geom_path() +
+  labs(x = "Time", 
+       y = "Wind (km/h)",
+       title = "SYD airport wind speed")
+```
+]
+
+---
+
+# Wind warning
+
+Basic steps:
+.pull-left[
+1. Loading relevant `R` packages
+1. Fetch BOM data for Sydney airport for the past 72 hours
+1. Making a time series using ggplot2 and flag wind warning
+1. Pass the report to your boss
+]
+
+--
+
+Challenges: 
+
+.pull-right[
+1. To use this system, you need to set up R and packages
+1. Your data might not be up-to-date if you are not physically in front of a laptop pressing the knit button
+1. You will end up generating/storing a lot of reports for your boss
+1. Sydney airport is hard-coded, so what happens if Melbourne airport also wants a similar system
+]
+
+---
+
+# Why use a dashboard?
+
++ To communicate results easily to non-experts
+
++ Think of a Rmd document as three components: 
+
+    1. Input (often the data)
+    1. Analysis (making plots, hypothesis testing, statistical modelling)
+    1. Outputs (interperting plots, making recommendations)
+
++ Users are typically non-experts in the analysis, but they are experts in understanding the inputs and outputs.
+
++ Hence, if the inputs and outputs of a set of analysis are set and determined, a dashboard system can help the users to obtain their results much faster
+
++ Additionally, a dashboard is typically live and can fetch real-time data. A Rmd file only captures a snapshop of the live data. 
+
+---
+# Shiny app in a Rmd file
+
+Go ahead and knit `bomrang.Rmd`, you will get a basic Shiny app!
+
+Input: 
+```{r, eval = FALSE}
+{{inputPanel(}}
+  textInput(inputId = "location",
+                   label = "Put a location here!",
+                   value = "Sydney airport")
+{{)}}
+```
+
+Output: 
+```{r, eval = FALSE}
+{{renderPlot({}}
+  weather = get_current_weather(input$location)
+  
+  weather %>% 
+    ggplot(aes(x = local_date_time_full,
+               y = wind_spd_kmh)) +
+    geom_path() +
+    labs(x = "Time", 
+         y = "Wind (km/h)")
+{{})}}
+```
+---
+# Shiny app in a Rmd file
+
+Go ahead and knit `bomrang.Rmd`, you will get a basic Shiny app!
+
+Input: 
+```{r, eval = FALSE}
+inputPanel(
+  {{textInput(inputId = "location",}}
+                   label = "Put a location here!",
+                   value = "Sydney airport")
+)
+```
+
+Output: 
+```{r, eval = FALSE}
+renderPlot({
+  {{weather = get_current_weather(input$location)}}
+  
+  weather %>% 
+    ggplot(aes(x = local_date_time_full,
+               y = wind_spd_kmh)) +
+    geom_path() +
+    labs(x = "Time", 
+         y = "Wind (km/h)")
+})
+```
+
+
+---
+<!-- class: segue -->
+<!-- class: segue-yellow -->
+---
