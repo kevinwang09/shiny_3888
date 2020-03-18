@@ -138,17 +138,17 @@ Go ahead and knit `bomrang.Rmd`, you will get a basic Shiny app!
 Input: 
 
 ```r
-*inputPanel(
+* inputPanel(
   textInput(inputId = "location",
                    label = "Put a location here!",
                    value = "Sydney airport")
-*)
+* )
 ```
 
 Output: 
 
 ```r
-*renderPlot({
+* renderPlot({
   weather = get_current_weather(input$location)
   
   weather %&gt;% 
@@ -168,7 +168,7 @@ Input:
 
 ```r
 inputPanel(
-*  textInput(inputId = "location",
+* textInput(inputId = "location",
                    label = "Put a location here!",
                    value = "Sydney airport")
 )
@@ -178,7 +178,7 @@ Output:
 
 ```r
 renderPlot({
-*  weather = get_current_weather(input$location)
+* weather = get_current_weather(input$location)
   
   weather %&gt;% 
     ggplot(aes(x = local_date_time_full,

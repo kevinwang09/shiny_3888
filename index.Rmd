@@ -29,7 +29,6 @@ knitr::opts_chunk$set(echo = TRUE, fig.retina = 2)
 suppressPackageStartupMessages({
   library(bomrang)
   library(tidyverse)
-  library(shiny)
 })
 ```
 
@@ -124,16 +123,16 @@ Go ahead and knit `bomrang.Rmd`, you will get a basic Shiny app!
 
 Input: 
 ```{r, eval = FALSE}
-{{inputPanel(}}
+* inputPanel(
   textInput(inputId = "location",
                    label = "Put a location here!",
                    value = "Sydney airport")
-{{)}}
+* )
 ```
 
 Output: 
 ```{r, eval = FALSE}
-{{renderPlot({}}
+* renderPlot({
   weather = get_current_weather(input$location)
   
   weather %>% 
@@ -142,7 +141,7 @@ Output:
     geom_path() +
     labs(x = "Time", 
          y = "Wind (km/h)")
-{{})}}
+*})
 ```
 ---
 # Shiny app in a Rmd file
@@ -152,7 +151,7 @@ Go ahead and knit `bomrang.Rmd`, you will get a basic Shiny app!
 Input: 
 ```{r, eval = FALSE}
 inputPanel(
-  {{textInput(inputId = "location",}}
+* textInput(inputId = "location",
                    label = "Put a location here!",
                    value = "Sydney airport")
 )
@@ -161,7 +160,7 @@ inputPanel(
 Output: 
 ```{r, eval = FALSE}
 renderPlot({
-  {{weather = get_current_weather(input$location)}}
+* weather = get_current_weather(input$location)
   
   weather %>% 
     ggplot(aes(x = local_date_time_full,
