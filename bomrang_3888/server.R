@@ -5,9 +5,20 @@ library(forecast)
 
 shinyServer(function(input, output) {
     
-    fetch_data = reactive({
+    # fetch_data = reactive({
+    #     weather = get_current_weather(input$location)
+    #     return(weather)
+    # })
+    
+    fetch_data = eventReactive(input$button, {
         weather = get_current_weather(input$location)
         return(weather)
+    })
+    
+    obs = observe({
+        print(
+            paste0(input$location, " is fun!")
+        )
     })
     
     output$wind_plot = renderPlot({

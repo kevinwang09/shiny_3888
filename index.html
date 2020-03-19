@@ -28,7 +28,7 @@ class: center, middle, inverse, title-slide
 # Making a Shiny application
 ## <a href="https://kevinwang09.github.io/shiny_3888/" class="uri">https://kevinwang09.github.io/shiny_3888/</a>
 ### <a href="https://kevinwang09.github.io/">Kevin Y. X. Wang</a>
-### Initiated on 2020 April 02, compiled on 2020 Mar 18
+### Initiated on 2020 April 02, compiled on 2020 Mar 19
 
 ---
 
@@ -131,24 +131,33 @@ Challenges:
 + Additionally, a dashboard is typically live and can fetch real-time data. A Rmd file only captures a snapshop of the live data. 
 
 ---
-# Shiny app in a Rmd file
+
+class: segue
+
+Shiny = input + R + output
+
+Once you know how to manage the inputs/outputs of your app, you are already halfway there!
+
+---
+
+# Shiny app in a Rmd file (not a full app)
 
 Go ahead and knit `bomrang.Rmd`, you will get a basic Shiny app!
 
 Input: 
 
 ```r
-* inputPanel(
+*inputPanel(
   textInput(inputId = "location",
                    label = "Put a location here!",
                    value = "Sydney airport")
-* )
+*)
 ```
 
 Output: 
 
 ```r
-* renderPlot({
+*renderPlot({
   weather = get_current_weather(input$location)
   
   weather %&gt;% 
@@ -160,7 +169,7 @@ Output:
 *})
 ```
 ---
-# Shiny app in a Rmd file
+# Shiny app in a Rmd file (not a full app)
 
 Go ahead and knit `bomrang.Rmd`, you will get a basic Shiny app!
 
@@ -189,8 +198,305 @@ renderPlot({
 })
 ```
 
+---
+# Inputs and outputs
+
++ Inputs
+    - Time of data accession
+    - Location 
++ Analysis
+    - Loading packages 
+    - Make a ggplot 
+    - Determine if a wind warning should be issued
++ Outputs
+    - Show the ggplot 
+    - Issue the wind warning
+---
+# A Shiny app is made up of two `.R` scripts
+
++ Inputs
+    - Special function managing inputs in `ui.R`
++ Analysis
+    - Write normal `R` codes in `server.R`
++ Outputs
+    - Special function managing outputs in `ui.R`
+---
+class: segue
+
+Demo 1: Let's build your first Shiny app!
+---
+
+# `ui.R`
+
+
+```r
+*shinyUI(
+*    fluidPage(
+        textInput(inputId = "location",
+                  label = "Put a location here!",
+                  value = "Sydney airport"),
+        plotOutput(outputId = "wind_plot")
+*    )
+*)
+```
+---
+
+# `server.R`
+
++ The inputs as determined from `ui.R` are passed to `server.R`, named `input`
++ You can access these inputs using `input$inputId`
++ The outputs as processed by `server.R` are passed to `ui.R`, named `output`
++ You can access these ouputs using `output$outputId`
+
+
+```r
+* shinyServer(function(input, output) {
+*    output$wind_plot = renderPlot({
+      weather = get_current_weather(input$location)
+        weather %&gt;% 
+          ggplot(aes(x = local_date_time_full,
+                     y = wind_spd_kmh)) +
+          geom_path() +
+          labs(x = "Time", 
+               y = "Wind (km/h)")
+    })
+})
+```
+---
+
+# R gallery of inputs and outputs
+
++ https://shiny.rstudio.com/gallery/widget-gallery.html
+
++ https://shiny.rstudio.com/gallery/covid19-tracker.html
+
++ Plotly
 
 ---
+
+class: segue
+
+`reactive`: a key concept in Shiny apps
+
+---
+
+# This `server.R` will fail. Why?
+
+
+```r
+shinyServer(function(input, output) {
+    output$wind_plot = renderPlot({
+        weather = get_current_weather(input$location)
+        weather %&gt;% 
+            ggplot(aes(x = local_date_time_full,
+                       y = wind_spd_kmh)) +
+            geom_path() +
+            labs(x = "Time", 
+                 y = "Wind (km/h)")
+    })
+    
+    output$temp_plot = renderPlot({
+*        weather %&gt;% 
+*            ggplot(aes(x = local_date_time_full,
+*                       y = apparent_t)) +
+*            geom_path() +
+*            labs(x = "Time", 
+*                 y = "Apparent Temp (Celcius)")
+    })
+})
+```
+
+---
+# `reactive` values
+
++ `renderPlot` (and other types of `render*`) are called "reactive" functions. Meaning they will react to changes to the `input`. 
+
++ Without it, you will get an error message like this: 
+
+```
+Error in .getReactiveEnvironment()$currentContext() : 
+  Operation not allowed without an active reactive context. 
+  (You tried to do something that can only be done from inside a reactive expression or observer.)
+```
+
++ Being `R` functions, the values you computed internally inside one `renderPlot` will not be shared with another `renderPlot` function (or any function for that matter)
+
+---
+# This `server.R` will work, but why it is a bad idea?
+
+
+```r
+shinyServer(function(input, output) {
+    output$wind_plot = renderPlot({
+*      weather = get_current_weather(input$location)
+        weather %&gt;% 
+            ggplot(aes(x = local_date_time_full,
+                       y = wind_spd_kmh)) +
+            geom_path() +
+            labs(x = "Time", 
+                 y = "Wind (km/h)")
+    })
+    
+    output$temp_plot = renderPlot({
+*      weather = get_current_weather(input$location)
+        weather %&gt;% 
+            ggplot(aes(x = local_date_time_full,
+                       y = apparent_t)) +
+            geom_path() +
+            labs(x = "Time", 
+                 y = "Apparent Temp (Celcius)")
+    })
+})
+```
+
+---
+# `reactive` function
+
++ We need a general function that will react to our inputs. That is the `reactive()` function!
+
++ Consider the following scenario: you want to make a plot for windspeed and another for temperature. 
+
++ We just saw that we need to re-fetch the data every time we draw a plot. 
+
++ But this is inefficient! It is better to download the data once and have that data available for every plotting function.
+---
+# `reactive` in action
+
+
+```r
+shinyServer(function(input, output) {
+    
+*    fetch_data = reactive({
+*        weather = get_current_weather(input$location)
+*        return(weather)
+*    })
+    
+    output$wind_plot = renderPlot({
+        fetch_data() %&gt;% 
+            ggplot() ## etc
+    })
+    
+    output$temp_plot = renderPlot({
+        fetch_data() %&gt;% 
+            ggplot() ## etc
+    })
+    
+})
+```
+---
+# `actionButton` and `eventReactive`
+
++ When we type out the phrase "Sydney airport", you notice the plots change immediately. 
++ However, this actually isn't ideal: many fetches of the data will be executed as your type out the letters.
++ This could be a problem if the computation is really computationally intensive or makes too many API requests to an external server. 
++ You could use an `actionButton()` in the `ui.R`, which, upon clicking, changes the value of `input$button`.
++ `eventReactive` in `server.R` will be set up such that every change in the value of `input$button` will trigger the computation of some code. 
+---
+# `actionButton` and `eventReactive`
+
++ `ui.R`
+
+
+```r
+shinyUI(fluidPage(
+  ...
+*    actionButton(inputId = "button", label = "Fetch data and plot")
+  ...
+))
+```
+
++ `server.R`
+
+
+```r
+shinyServer(function(input, output) {
+    
+*  fetch_data = eventReactive(input$button, {
+        weather = get_current_weather(input$location)
+        return(weather)
+    })
+...
+})
+```
+---
+
+# `observe()` changes the internal values objects (extension)
+
++ Unlike `reactive()`, the `observe()` will change the internal values of `R` objects.
+
++ Try adding this code to `server.R` and see what happens in the console. 
+
+
+```r
+obs = observe({
+        print(
+            paste0(input$location, " is fun!")
+        )
+    })
+```
+
++ A special case of `observe()` is `observeEvent()`, see some uses in context of `actionButton()` [here](https://shiny.rstudio.com/articles/action-buttons.html). 
+
+---
+
+# `global.R` will always run when you launch a Shiny app
+
+
++ A good place to put in codes like:
+
+```r
+library(shiny)
+library(bomrang)
+library(tidyverse)
+library(forecast)
+
+theme_set(theme_bw())
+
+customised_function = function(...){
+  ...
+}
+```
+
+---
+
+# Deploying your app
+
++ You can share your app via shinyapps.io.
+  - Hosts up to 5 applications and 25 active hours per month.
+
++ Alternatively, you can put the Shiny scripts on GitHub. 
+  - People need to run the app locally on their laptop with all necessary packages installed. 
+
+```r
+library(tidyverse)
+library(shiny)
+library(forecast)
+library(ggrepel)
+library(nCov2019)
+## devtools::install_github("GuangchuangYu/nCov2019")
+
+shiny::runGitHub(
+    repo = "covid19", 
+    username = "kevinwang09", 
+    ref = "master")
+```
+---
+# Shiny app submission (not assessed, more for practising your skills)
+
++ 
+
+---
+
+# Some resources
+
++ A full set of official tutorial materials: https://shiny.rstudio.com/tutorial/
++ Gallery of Shiny apps: https://shiny.rstudio.com/gallery/
++ 2020 Shiny app contest: https://community.rstudio.com/tags/shiny-contest-2020
++ I made [this app](https://github.com/kevinwang09/catdog_shiny) that looks ar URL of a image, downloads it and use a deep learning model to identify if the picture is that of a cat or dog. Feel free to modify it! Similar website: https://isthisacat.com/.
++ How to debug in Shiny: https://shiny.rstudio.com/articles/debugging.html. (Warning: it is more painful than debugging `R` codes because of the reactive values)
+
+---
+
 &lt;!-- class: segue --&gt;
 &lt;!-- class: segue-yellow --&gt;
 ---
