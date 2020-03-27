@@ -41,7 +41,8 @@ suppressPackageStartupMessages({
 + Inputs and outputs of a Shiny app
 + Demo 1: `bomrang` Shiny app - wind plot
 + Demo 2: `bomrang` Shiny app - temperature plot and `reactive`
-+ Demo 3: `bomrang` Shiny app - deployment
++ Demo 3: `bomrang` Shiny app - more on `reactive`
++ Demo 4: `bomrang` Shiny app - deployment
 + COVID-19 Shiny app - reproducibility 
 + Tips and resources for Shiny
 ---
@@ -100,15 +101,15 @@ Challenges:
 
 ---
 
-# Why use a dashboard?
-
-+ To communicate results easily to non-experts
+# Why use a dashboard instead of a Rmd report?
 
 + Think of a Rmd document as three components: 
 
     1. Input (often the data)
     1. Analysis (making plots, hypothesis testing, statistical modelling)
     1. Outputs (interperting plots, making recommendations)
+
++ To communicate results easily to non-experts
 
 + Users are typically non-experts in the analysis, but they are experts in understanding the inputs and outputs.
 
@@ -120,7 +121,7 @@ Challenges:
 
 class: segue
 
-Shiny = input + R + output
+Shiny = `ui.R`+ `server.R`
 
 Once you know how to manage the inputs/outputs of your app, you are already halfway there!
 
@@ -455,7 +456,7 @@ shiny::runGitHub(
 ---
 # Shiny app submission (not assessed, more for practising your skills)
 
-+ 
++ Submit an app analysing COVID19 data here: https://github.com/kevinwang09/shiny_3888/issues/1
 
 ---
 
