@@ -1,4 +1,2 @@
-install.packages(c("devtools", "shiny", "tidyverse", "DT", "forecast"))
-devtools::install_github("rstudio/keras")
-library(keras)
-install_keras()
+install.packages(c("devtools", "shiny", "tidyverse", "DT", "bomrang", "plotly", "ggrepel"))
+devtools::install_github("GuangchuangYu/nCov2019")

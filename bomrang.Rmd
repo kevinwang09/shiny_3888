@@ -16,29 +16,26 @@ suppressPackageStartupMessages({
 
 
 ```{r}
-SYD_weather = get_current_weather("Sydney airport")
+location = "Sydney airport"
 
-glimpse(SYD_weather)
+weather = bomrang::get_current_weather(location)
 
-subtitle = ifelse(any(SYD_weather$wind_spd_kmh >= 30), "Wind warning", "All normal")
+glimpse(weather)
 
-SYD_weather %>% 
+weather %>% 
   ggplot(aes(x = local_date_time_full,
              y = wind_spd_kmh)) +
   geom_path() +
   labs(x = "Time", 
        y = "Wind (km/h)",
-       title = "SYD airport wind speed",
-       subtitle = subtitle)
+       title = "SYD airport wind speed")
 ```
 
 
 ```{r}
-inputPanel(
-  shiny::textInput(inputId = "location",
+shiny::textInput(inputId = "location",
                    label = "Put a location here!",
                    value = "Sydney airport")
-)
 
 renderPlot({
   weather = get_current_weather(input$location)
