@@ -5,6 +5,14 @@
 
 This is a repo for hosting teaching materials for a lecture on building and deploying Shiny apps as a part of DATA3888. 
 
+# Slides
+
+See https://kevinwang09.github.io/shiny_3888
+
+# Package installation
+
+See https://github.com/kevinwang09/shiny_3888/blob/master/install.R
+
 # Related repos
 
 + https://github.com/kevinwang09/covid19 A Shiny app for visualising confirmed cases of COVID-19 in various countries. 
