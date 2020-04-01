@@ -37,6 +37,16 @@ suppressPackageStartupMessages({
 })
 ```
 
+
+# Instructions 
+
++ All materials are in this repo: https://github.com/kevinwang09/shiny_3888
++ Try to download a copy of the repository via (https://github.com/kevinwang09/shiny_3888/archive/master.zip) if they want to run the materials interactively in class. 
++ Slides are here: https://kevinwang09.github.io/shiny_3888
++ Install revevant packages here: https://github.com/kevinwang09/shiny_3888/blob/master/install.R
+
+---
+
 # Lecture outline
 
 + Case scenario: Sydney airport dashboard in a Rmd file
@@ -66,6 +76,8 @@ Motivation: weather warning
 
 # `bomrang.Rmd`
 
+[Vignette of bomrang](https://cran.r-project.org/web/packages/bomrang/vignettes/bomrang.html)
+
 .scroll-output[
 ```{r, fig.width = 14, fig.height = 5, warning=FALSE}
 library(bomrang)
@@ -73,6 +85,8 @@ library(tidyverse)
 
 location = "Sydney airport"
 weather = bomrang::get_current_weather(location)
+
+glimpse(weather)
 
 weather %>% 
   ggplot(aes(x = local_date_time_full,
@@ -90,14 +104,18 @@ weather %>%
 + A Rmd file captures a snapshot of the data with a fixed set of parameters
 
   - Good for reproducibility and record keeping
-  - Bad for looking at real-time data (e.g. "Sydney airport" is hard-coded)
+  - Bad for looking at updated data (e.g. "Sydney airport" is hard-coded)
 
+--
 
-+ A Shiny app hides all the computations in the background and only shows inputs and outputs more relevant to the user (a domain expert not familiar with the underlying R codes)
++ A Shiny app can access data in real-time and modify outputs (plots & summary statistics) instantly based on user inputs (parameters like "location")
 
-+ A Shiny app can access data in real-time and modify outputs instantly based on user inputs
++ A Shiny app is a dashboard application*. It hides all the computations in the background and only shows inputs and outputs more relevant to the user (a domain expert not familiar with the underlying R codes)
 
-+ The purpose of this lecture is to build this Shiny app:
+.footnote[If you want to see examples of dashboards: https://ourworldindata.org/coronavirus]
+--
+
++ The purpose of this lecture is to build this simple Shiny app and understand its design:
 
 ```
 shiny::runGitHub(
@@ -110,22 +128,26 @@ shiny::runGitHub(
 
 # Why Shiny feels a bit funny?
 
-+ Three components:
++ A Shiny app is very much point-and-click 
+
++ But underneath, Shiny uses R for computation and impose very strict rules on input and output 
++ So much so it almost feels like Shiny is a language on its own
+
++ For the bomrang Shiny app, try to focus on three components:
 
     1. Input (enter location)
     1. Computation (download data, make plots, modelling)
     1. Outputs (show figures, make interpretations)
 
-+ Shiny uses R for computation but impose strict rules on input and output (so much so it almost feels like Shiny is a language on its own)
-
 ---
 class: segue
 
-Knitting `bomrang.Rmd` will give you a skeleton Shiny app
+Demo 0: Knitting `bomrang.Rmd` will give you a skeleton Shiny app
 
 (This is not a full app, but only to see what an "input" and an "output" are in context of a Shiny app) 
 ---
-# Structure of a Shiny app: `input` and `output`
+# `input` and `output`: the core of Shiny
+
 Input: a location as text
 ```{r, eval = FALSE}
 * textInput(inputId = "location",
@@ -147,12 +169,13 @@ renderPlot({
 })
 ```
 ---
+
 class: segue
 
 shiny = `ui.R`+ `server.R`
 
 ---
-# A Shiny app is made up of two `.R` scripts
+# A Shiny app is made up of two `.R` scripts*
 
 + Inputs
     - Special function managing inputs in `ui.R`
@@ -161,7 +184,7 @@ shiny = `ui.R`+ `server.R`
 + Outputs
     - Special function managing outputs in `ui.R`
     
-+ You are allowed to have more than two scripts, if you wish to better organise longer codes (e.g. using `global.R`, see later)
+.footnote[*you are allowed to have more than two scripts, if you wish to better organise substaintial codes (e.g. using `global.R`, see later)]
 ---
 class: segue
 
@@ -171,6 +194,10 @@ Demo 1: Let's build your first Shiny app!
 # `ui.R`
 
 ```{r, eval = FALSE}
+library(shiny)
+library(bomrang)
+library(tidyverse)
+
 *shinyUI(
 *    fluidPage(
         textInput(inputId = "location",
@@ -180,14 +207,17 @@ Demo 1: Let's build your first Shiny app!
 *    )
 *)
 ```
+
++ The inputs as determined from `ui.R` are passed to `server.R` as a list, named `input`
++ You can access these inputs in `server.R` using `input$inputId`
++ `fluidPage` is not terribly important here
+
 ---
 
 # `server.R`
 
-+ The inputs as determined from `ui.R` are passed to `server.R` as a list, named `input`
-+ You can access these inputs using `input$inputId`
 + The outputs as processed by `server.R` are passed to `ui.R` as a list, named `output`
-+ You can access these ouputs using `output$outputId`
++ You can access these ouputs in `ui.R` using `output$outputId`
 
 ```{r, eval = FALSE}
 * shinyServer(function(input, output) {
@@ -210,20 +240,18 @@ Demo 1: Let's build your first Shiny app!
 
 + My typicall workflow: 
   - Write a `Rmd` file before making a full app to ensure all codes are correct and get a sense of what should be inputs/outputs
-  - Open up a new Shiny app in RStudio (File -> New File -> Shiny Web App)
-  
-  
+  - Open up a an old Shiny app I made or, from RStudio (File -> New File -> Shiny Web App)
+
+--
+
 + There are many more `render*` and `*Input` functions, see [here](https://kevinwang09.github.io/SSA-Shiny-Workshop-2019/01-Intro.html#20) for a incomplete list.
 
 + Designing a good UI is more of an art, I found looking at other people's work to be quite useful (see extra links at the end of these slides)
-
-+ Another way to make a Shiny app is to copy the entire `ui.R` and `server.R` into one `app.R`. But I am an old man with a preference for modularisation.
-
 ---
 
 class: segue
 
-Demo2: `reactive`, a key concept in Shiny apps
+Demo 2: `reactive`, a key concept in Shiny apps
 
 ---
 # "reactive" values
@@ -245,25 +273,52 @@ Error in .getReactiveEnvironment()$currentContext() :
 ```{r, eval = FALSE}
 shinyServer(function(input, output) {
     output$wind_plot = renderPlot({
-        weather = get_current_weather(input$location)
-        weather %>% 
-            ggplot(...)
+       weather = get_current_weather(input$location)
+       weather %>% 
+          ggplot(aes(x = local_date_time_full,
+                     y = wind_spd_kmh)) +
+          geom_path() +
+          labs(x = "Time", 
+               y = "Wind (km/h)")
     })
     
-    output$temp_plot = renderPlot({
-*        weather %>% 
+*  output$temp_plot = renderPlot({
+*         weather %>% 
 *            ggplot(aes(x = local_date_time_full,
 *                       y = apparent_t)) +
 *            geom_path() +
 *            labs(x = "Time", 
 *                 y = "Apparent Temp (Celcius)")
-    })
+*   })
 })
 ```
 
---
+---
+# This `server.R` will fail. Why?
 
-+ Being `R` functions, the values you computed internally inside one `renderPlot` will not be shared with another `renderPlot` function (or any function for that matter)
+```{r, eval = FALSE}
+shinyServer(function(input, output) {
+    output$wind_plot = renderPlot({
+*      weather = get_current_weather(input$location)
+*      weather %>% 
+          ggplot(aes(x = local_date_time_full,
+                     y = wind_spd_kmh)) +
+          geom_path() +
+          labs(x = "Time", 
+               y = "Wind (km/h)")
+    })
+    
+  output$temp_plot = renderPlot({
+*        weather %>% 
+            ggplot(aes(x = local_date_time_full,
+                       y = apparent_t)) +
+            geom_path() +
+            labs(x = "Time", 
+                 y = "Apparent Temp (Celcius)")
+   })
+})
+```
+
 
 ---
 # This `server.R` will work, but why it is a bad idea?
@@ -462,13 +517,13 @@ validate(
 # Do's and dont's
 
 - Do's
-  + Write a Rmd file to plan out what are the inputs/ouputs of an app. 
+  + Write a Rmd file to plan out what are the inputs/ouputs of an app
   + Build a working app first before prettifying
-  + Google! There are a lot of free resources/blog posts and app examples on GitHub. 
+  + Google! There are a lot of free resources/blog posts and app examples on GitHub
   + Make lots of git commits (always have a working copy to go back to)
 
 - Dont's
-  + Write awfully long functions, try to modularise your code whereever possible
+  + Write awfully long functions, try to modularise your code whereever possible (this is why I don't use `app.R`)
   + Manage your brackets by using comments and chunk collapse
   + Cry when debugging Shiny
   + Make an app that takes up a lot of resources

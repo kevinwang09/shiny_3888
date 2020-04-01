@@ -1,5 +1,5 @@
 ---
-title: "Bomrang Temp app"
+title: "Bomrang Shiny in a Rmd"
 author: "Kevin Wang"
 date: "07/03/2020"
 output: html_document
@@ -14,7 +14,7 @@ suppressPackageStartupMessages({
 })
 ```
 
-
+# Oridinary RMarkdown stuff
 ```{r}
 location = "Sydney airport"
 
@@ -32,23 +32,27 @@ weather %>%
 ```
 
 
+# The Shiny magic!
+
+This embeded app has almost the same functionalities as the full bomrang app!
+
+## Input
 ```{r}
 shiny::textInput(inputId = "location",
                    label = "Put a location here!",
                    value = "Sydney airport")
+```
 
+## Output
+```{r}
 renderPlot({
   weather = get_current_weather(input$location)
-  
-  subtitle = ifelse(any(weather$wind_spd_kmh >= 30), "Wind warning", "All normal")
   
   weather %>% 
     ggplot(aes(x = local_date_time_full,
                y = wind_spd_kmh)) +
     geom_path() +
     labs(x = "Time", 
-         y = "Wind (km/h)",
-         title = weather$full_name[1],
-         subtitle = subtitle)
+         y = "Wind (km/h)")
 })
 ```
