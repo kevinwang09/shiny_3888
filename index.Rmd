@@ -2,7 +2,7 @@
 title: "Making a Shiny application"
 subtitle: "https://kevinwang09.github.io/shiny_3888/"
 author: '[Kevin Y. X. Wang](https://kevinwang09.github.io/)'
-date: "`r paste0('Initiated on 2020 April 02, compiled on ', format(Sys.time(), '%Y %b %d'))`"
+date: "`r paste0('2020 April 02, slides compiled on ', format(Sys.time(), '%Y %b %d'))`"
 output:
   xaringan::moon_reader:
     css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
@@ -69,6 +69,8 @@ Motivation: weather warning
 .scroll-output[
 ```{r, fig.width = 14, fig.height = 5, warning=FALSE}
 library(bomrang)
+library(tidyverse)
+
 location = "Sydney airport"
 weather = bomrang::get_current_weather(location)
 
@@ -201,22 +203,21 @@ Demo 1: Let's build your first Shiny app!
 })
 ```
 ---
+
 # This is a good time to pause
 
-+ Users can interact instantly with the designed input/output. That is its biggest advantage over Rmd.
++ **Users can interact instantly with the designed input/output. That is its biggest advantage over Rmd**.
 
-+ I recommend building a `Rmd` file before making a full app:
-  - Ensure all R codes are correct (debugging Shiny is consierably more difficult)
-  - Get a good design of what are the allowable inputs and outputs
++ My typicall workflow: 
+  - Write a `Rmd` file before making a full app to ensure all codes are correct and get a sense of what should be inputs/outputs
+  - Open up a new Shiny app in RStudio (File -> New File -> Shiny Web App)
   
   
 + There are many more `render*` and `*Input` functions, see [here](https://kevinwang09.github.io/SSA-Shiny-Workshop-2019/01-Intro.html#20) for a incomplete list.
 
++ Designing a good UI is more of an art, I found looking at other people's work to be quite useful (see extra links at the end of these slides)
 
-+ R gallery of inputs and outputs
-
-  - https://shiny.rstudio.com/gallery/widget-gallery.html
-  - https://shiny.rstudio.com/gallery/covid19-tracker.html
++ Another way to make a Shiny app is to copy the entire `ui.R` and `server.R` into one `app.R`. But I am an old man with a preference for modularisation.
 
 ---
 
@@ -407,6 +408,11 @@ customised_function = function(...){
 ```
 
 ---
+class: segue
+
+Demo 4: deploying Shiny app
+
+---
 
 # Deploying your app
 
@@ -430,6 +436,29 @@ shiny::runGitHub(
 ```
 
 ---
+class: segue
+
+Demo 5: debugging Shiny app (extension)
+
+---
+
+# Empty string in the input text box
+
+See https://shiny.rstudio.com/articles/debugging.html
+
++ Most common error: unexpect input. Put `validate()` and `need()` around the appropriate input
+```
+validate(
+  need(input$location, 'Choose a location!'))
+```
++ Set breakpoint 
++ `browser()`
++ `shiny::runApp(display.mode="showcase")`
++ `shiny::showReactLog()`
++ Print warning messages in console for diagnosis
++ `options(shiny.error = browser)`
+---
+
 # Do's and dont's
 
 - Do's
@@ -448,14 +477,13 @@ shiny::runGitHub(
 # Talking through some apps
 
 + [COVID19](https://github.com/kevinwang09/covid19):
-    - `tabset` and gradually improved UI
+    - `tabset` and gradually improved UI in the commit history
     - Modularised functions
 + [Cats and Dogs](https://github.com/kevinwang09/catdog_3888):
-    - Loading a pre-trained model in `global.R`
+    - Loading a pre-trained keras model in `global.R`
+    - Similar website: https://isthisacat.com/
 
 + Other apps
-
-
 ---
 
 # Shiny app submission (not assessed, more for practising your skills)
@@ -466,13 +494,11 @@ shiny::runGitHub(
 # Some resources
 
 + A full set of official tutorial materials: https://shiny.rstudio.com/tutorial/
++ [Dr Wishart's workshop on Shiny](https://github.com/jrwishart/SSA-Shiny-Workshop-2019), which I enabled the slides [here](https://github.com/kevinwang09/SSA-Shiny-Workshop-2019). 
++ [RStudio workshop on Shiny](https://github.com/rstudio-conf-2020/shiny-start-finish)
++ A massive collection of Shiny apps: https://github.com/mkearney/shinyapps_links
 + Gallery of Shiny apps: https://shiny.rstudio.com/gallery/
 + 2020 Shiny app contest: https://community.rstudio.com/tags/shiny-contest-2020
-+ I made [this app](https://github.com/kevinwang09/catdog_shiny) that looks ar URL of a image, downloads it and use a deep learning model to identify if the picture is that of a cat or dog. Feel free to modify it! Similar website: https://isthisacat.com/.
-+ How to debug in Shiny: https://shiny.rstudio.com/articles/debugging.html. (Warning: it is more painful than debugging `R` codes because of the reactive values)
-+ [RStudio course on Shiny](https://github.com/rstudio-conf-2020/shiny-start-finish)
-+ [Dr Wishart's course on Shiny](https://github.com/jrwishart/SSA-Shiny-Workshop-2019)
-
 ---
 
 <!-- class: segue -->

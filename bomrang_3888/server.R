@@ -11,6 +11,9 @@ shinyServer(function(input, output) {
     # })
     
     fetch_data = eventReactive(input$button, {
+        # validate(
+        #     need(input$location, 'Choose a location!')
+        # )
         weather = get_current_weather(input$location)
         return(weather)
     })

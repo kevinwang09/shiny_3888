@@ -28,3 +28,5 @@ Go to https://github.com/kevinwang09/shiny_3888/issues/1 to submit your nCov Shi
 + The [covid19](https://github.com/kevinwang09/covid19) app was built upon the [nCov2019](https://github.com/GuangchuangYu/nCov2019) package.
 
 + The [catdog_shiny](https://github.com/kevinwang09/catdog_shiny) app was inspired by https://adamspannbauer.github.io/2018/02/14/image-classification-r-and-python/ and https://gerinberg.com/2019/12/10/image-recognition-keras/. Some simplifications of the codes were made inside the app. 
+
++ [Dr Wishart's workshop on Shiny](https://github.com/jrwishart/SSA-Shiny-Workshop-2019), which I enabled the slides [here](https://github.com/kevinwang09/SSA-Shiny-Workshop-2019). 
