@@ -258,6 +258,8 @@ Demo 2: `reactive`, a key concept in Shiny apps
 
 + `renderPlot` (and other types of `render*`) are called "reactive" functions. Meaning they will react to changes in the `input` list. 
 
++ The output of a reactive function is a reactive value. The reactive function will get re-evaluated whenever there is a change in the `input`, so the reactive value will change accordingly. 
+
 + Trying to make an output without a reactive function (i.e remove the `renderPlot` function) results in an error similar to this: 
 
 ```
